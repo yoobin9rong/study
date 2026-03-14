@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>최유빈 | UX 기획자</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #111111;
+      --white: #ffffff;
+      --gray-100: #f5f5f5;
+      --gray-300: #d4d4d4;
+      --gray-500: #737373;
+      --gray-700: #404040;
+      --accent: #4f46e5;
+      --accent-light: #eef2ff;
+      --radius: 12px;
+      --font: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      color: var(--black);
+      background: var(--white);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 5%;
+      height: 64px;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gray-300);
+      transition: box-shadow 0.3s;
+    }
+    nav.scrolled { box-shadow: 0 2px 16px rgba(0,0,0,0.07); }
+    .nav-logo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--black);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.9rem;
+      color: var(--gray-700);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--black);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px; left: 0; right: 0;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-300);
+      padding: 24px 5%;
+      z-index: 99;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-size: 1rem;
+      color: var(--gray-700);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    /* ── SECTIONS COMMON ── */
+    section { padding: 96px 5%; }
+    .section-tag {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .section-sub {
+      font-size: 1rem;
+      color: var(--gray-500);
+      max-width: 480px;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 64px;
+      background: linear-gradient(160deg, #fafafa 60%, var(--accent-light) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(79,70,229,0.08), transparent 70%);
+      top: -100px; right: -200px;
+      pointer-events: none;
+    }
+    .hero-inner {
+      max-width: 700px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 24px;
+      background: var(--accent-light);
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.4); }
+    }
+    .hero-name {
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1.05;
+      margin-bottom: 20px;
+    }
+    .hero-name span { color: var(--accent); }
+    .hero-role {
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      font-weight: 500;
+      color: var(--gray-700);
+      margin-bottom: 24px;
+    }
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--gray-500);
+      max-width: 480px;
+      margin-bottom: 40px;
+      line-height: 1.8;
+    }
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--white);
+    }
+    .btn-primary:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(79,70,229,0.3); }
+    .btn-outline {
+      background: transparent;
+      color: var(--black);
+      border: 1.5px solid var(--gray-300);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 36px;
+      left: 5%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8rem;
+      color: var(--gray-500);
+    }
+    .scroll-line {
+      width: 40px;
+      height: 1px;
+      background: var(--gray-300);
+      position: relative;
+      overflow: hidden;
+    }
+    .scroll-line::after {
+      content: '';
+      position: absolute;
+      left: -100%;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--accent);
+      animation: slide 2s infinite;
+    }
+    @keyframes slide { to { left: 100%; } }
+
+    /* ── ABOUT ── */
+    #about { background: var(--white); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      margin-top: 48px;
+    }
+    .about-avatar {
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 380px;
+      border-radius: 24px;
+      background: var(--gray-100);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--gray-500);
+      font-size: 0.9rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-avatar::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--accent-light), var(--gray-100));
+    }
+    .avatar-icon {
+      position: relative;
+      font-size: 5rem;
+      line-height: 1;
+    }
+    .avatar-label {
+      position: relative;
+      font-weight: 500;
+      color: var(--gray-500);
+    }
+    .about-text p {
+      color: var(--gray-700);
+      line-height: 1.9;
+      margin-bottom: 16px;
+    }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 32px;
+      padding-top: 32px;
+      border-top: 1px solid var(--gray-300);
+    }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -1px;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+
+    /* ── SKILLS ── */
+    #skills { background: var(--gray-100); }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 48px;
+    }
+    .skill-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      border: 1px solid var(--gray-300);
+      transition: all 0.3s;
+      cursor: default;
+    }
+    .skill-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(79,70,229,0.1);
+    }
+    .skill-icon {
+      font-size: 2rem;
+      margin-bottom: 14px;
+    }
+    .skill-name {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .skill-desc {
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .skill-bar-bg {
+      height: 4px;
+      background: var(--gray-100);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .skill-bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      width: 0;
+      transition: width 1s ease;
+    }
+    .skill-level {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    /* ── PROJECTS ── */
+    #projects { background: var(--white); }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 28px;
+      margin-top: 48px;
+    }
+    .project-card {
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: all 0.3s;
+      background: var(--white);
+    }
+    .project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.1);
+      border-color: transparent;
+    }
+    .project-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-thumb .thumb-label {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+      background: rgba(0,0,0,0.25);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .thumb-1 { background: linear-gradient(135deg, #e0e7ff, #c7d2fe); }
+    .thumb-2 { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
+    .thumb-3 { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+    .project-body { padding: 24px; }
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .tag {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+    .project-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+    .project-desc {
+      font-size: 0.88rem;
+      color: var(--gray-500);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      transition: gap 0.2s;
+    }
+    .project-link:hover { gap: 10px; }
+
+    /* ── CONTACT ── */
+    #contact { background: var(--black); color: var(--white); }
+    #contact .section-tag { background: rgba(79,70,229,0.2); }
+    #contact .section-title { color: var(--white); }
+    #contact .section-sub { color: var(--gray-300); }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      margin-top: 48px;
+      align-items: start;
+    }
+    .contact-info { display: flex; flex-direction: column; gap: 20px; }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.1);
+      text-decoration: none;
+      color: var(--white);
+      transition: all 0.3s;
+    }
+    .contact-item:hover { border-color: var(--accent); background: rgba(79,70,229,0.1); }
+    .contact-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .contact-detail .contact-type {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    .contact-detail .contact-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--gray-300);
+    }
+    .form-group input,
+    .form-group textarea {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      color: var(--white);
+      font-family: var(--font);
+      transition: border-color 0.2s;
+      outline: none;
+      resize: none;
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: var(--gray-500); }
+    .form-group input:focus,
+    .form-group textarea:focus { border-color: var(--accent); }
+    .form-group textarea { min-height: 120px; }
+    .btn-send {
+      background: var(--accent);
+      color: var(--white);
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-send:hover { background: #4338ca; transform: translateY(-2px); }
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #6ee7b7;
+      font-weight: 600;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #0a0a0a;
+      color: var(--gray-500);
+      text-align: center;
+      padding: 28px 5%;
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* ── FADE-IN ANIMATION ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      section { padding: 72px 5%; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .about-avatar { max-width: 100%; aspect-ratio: 4/3; }
+      .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+      .form-row { grid-template-columns: 1fr; }
+      .about-stats { gap: 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-cta { flex-direction: column; }
+      .btn { text-align: center; }
+      .projects-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">최유빈</a>
+    <ul class="nav-links">
+      <li><a href="#about">소개</a></li>
+      <li><a href="#skills">스킬</a></li>
+      <li><a href="#projects">프로젝트</a></li>
+      <li><a href="#contact">연락</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="메뉴 열기">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about" class="mobile-link">소개</a>
+    <a href="#skills" class="mobile-link">스킬</a>
+    <a href="#projects" class="mobile-link">프로젝트</a>
+    <a href="#contact" class="mobile-link">연락</a>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">현재 새로운 기회를 찾고 있습니다</div>
+      <h1 class="hero-name">최<span>유빈</span></h1>
+      <p class="hero-role">UX 기획자 &nbsp;·&nbsp; Product Designer</p>
+      <p class="hero-desc">
+        사용자의 행동을 관찰하고, 데이터로 문제를 정의하며,<br>
+        더 나은 경험을 설계합니다.<br>
+        사람 중심의 디자인으로 비즈니스 가치를 만들어갑니다.
+      </p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary">프로젝트 보기</a>
+        <a href="#contact" class="btn btn-outline">연락하기</a>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      <span>스크롤</span>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-tag">About</div>
+    <h2 class="section-title">사용자와 비즈니스를<br>연결하는 기획자</h2>
+    <div class="about-grid fade-up">
+      <div class="about-avatar">
+        <div class="avatar-icon">👤</div>
+        <div class="avatar-label">Yoobin Choi</div>
+      </div>
+      <div class="about-text">
+        <p>
+          안녕하세요, UX 기획자 <strong>최유빈</strong>입니다. 저는 사용자 리서치를 기반으로 문제를 발견하고, 그것을 해결하는 과정에서 즐거움을 느낍니다.
+        </p>
+        <p>
+          단순히 예쁜 화면을 만드는 것을 넘어, 사용자가 자연스럽게 목표를 달성할 수 있는 경험의 흐름을 설계하는 것이 저의 핵심 역량입니다.
+        </p>
+        <p>
+          인터뷰, 설문, 사용성 테스트 등 다양한 리서치 방법론을 활용해 인사이트를 도출하고, 이를 와이어프레임과 프로토타입으로 구체화하여 개발팀, 디자인팀과 긴밀하게 협업합니다.
+        </p>
+        <div class="about-stats">
+          <div class="stat-item">
+            <div class="stat-num">3+</div>
+            <div class="stat-label">년 경력</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">12+</div>
+            <div class="stat-label">완료 프로젝트</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">50+</div>
+            <div class="stat-label">사용자 인터뷰</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-tag">Skills</div>
+    <h2 class="section-title">보유 역량</h2>
+    <p class="section-sub">UX 기획의 전 과정을 아우르는 다양한 스킬셋을 갖추고 있습니다.</p>
+    <div class="skills-grid">
+      <div class="skill-card fade-up">
+        <div class="skill-icon">🔍</div>
+        <div class="skill-name">UX 리서치</div>
+        <div class="skill-desc">심층 인터뷰, 설문조사, 경쟁사 분석을 통해 사용자 니즈와 문제점을 발굴합니다.</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-width="92"></div></div>
+        <div class="skill-level">Expert · 92%</div>
+      </div>
+      <div class="skill-card fade-up">
+        <div class="skill-icon">✏️</div>
+        <div class="skill-name">와이어프레임</div>
+        <div class="skill-desc">Figma, Sketch를 활용해 빠르고 명확한 와이어프레임과 플로우 차트를 제작합니다.</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-width="88"></div></div>
+        <div class="skill-level">Expert · 88%</div>
+      </div>
+      <div class="skill-card fade-up">
+        <div class="skill-icon">⚡</div>
+        <div class="skill-name">프로토타이핑</div>
+        <div class="skill-desc">인터랙티브 프로토타입으로 아이디어를 빠르게 검증하고 이해관계자를 설득합니다.</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-width="85"></div></div>
+        <div class="skill-level">Advanced · 85%</div>
+      </div>
+      <div class="skill-card fade-up">
+        <div class="skill-icon">🧪</div>
+        <div class="skill-name">사용성 테스트</div>
+        <div class="skill-desc">모더레이티드/언모더레이티드 테스트를 통해 실제 사용자 행동 데이터를 수집합니다.</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-width="90"></div></div>
+        <div class="skill-level">Expert · 90%</div>
+      </div>
+      <div class="skill-card fade-up">
+        <div class="skill-icon">📊</div>
+        <div class="skill-name">데이터 분석</div>
+        <div class="skill-desc">GA4, Mixpanel 등 분석 도구를 활용해 퍼널 분석 및 행동 데이터를 해석합니다.</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-width="78"></div></div>
+        <div class="skill-level">Advanced · 78%</div>
+      </div>
+      <div class="skill-card fade-up">
+        <div class="skill-icon">🤝</div>
+        <div class="skill-name">이해관계자 관리</div>
+        <div class="skill-desc">기획서, 리서치 리포트 작성과 발표를 통해 다양한 팀과 효과적으로 협업합니다.</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-width="82"></div></div>
+        <div class="skill-level">Advanced · 82%</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-tag">Projects</div>
+    <h2 class="section-title">주요 프로젝트</h2>
+    <p class="section-sub">사용자 중심의 접근으로 해결한 대표 프로젝트들입니다.</p>
+    <div class="projects-grid">
+
+      <div class="project-card fade-up">
+        <div class="project-thumb thumb-1">
+          🛒
+          <span class="thumb-label">Image Placeholder</span>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">UX 리서치</span>
+            <span class="tag">와이어프레임</span>
+            <span class="tag">E-Commerce</span>
+          </div>
+          <div class="project-title">쇼핑앱 장바구니 개선 프로젝트</div>
+          <div class="project-desc">
+            구매 전환율 저하 원인을 사용성 테스트로 규명하고, 장바구니 UX를 재설계하여 전환율 23% 향상을 달성했습니다.
+          </div>
+          <a href="#" class="project-link">케이스 스터디 보기 →</a>
+        </div>
+      </div>
+
+      <div class="project-card fade-up">
+        <div class="project-thumb thumb-2">
+          🏥
+          <span class="thumb-label">Image Placeholder</span>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">서비스 기획</span>
+            <span class="tag">프로토타이핑</span>
+            <span class="tag">헬스케어</span>
+          </div>
+          <div class="project-title">원격 진료 서비스 UX 설계</div>
+          <div class="project-desc">
+            고령 사용자를 위한 원격 진료 앱의 접근성을 개선하고, 예약부터 진료까지의 전체 여정을 재설계했습니다.
+          </div>
+          <a href="#" class="project-link">케이스 스터디 보기 →</a>
+        </div>
+      </div>
+
+      <div class="project-card fade-up">
+        <div class="project-thumb thumb-3">
+          📚
+          <span class="thumb-label">Image Placeholder</span>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">정보 구조</span>
+            <span class="tag">사용성 테스트</span>
+            <span class="tag">에듀테크</span>
+          </div>
+          <div class="project-title">학습 플랫폼 온보딩 플로우 개선</div>
+          <div class="project-desc">
+            신규 사용자 이탈률 문제를 해결하기 위해 온보딩 플로우를 전면 개편하고, 7일 리텐션 41% 개선을 이끌었습니다.
+          </div>
+          <a href="#" class="project-link">케이스 스터디 보기 →</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-tag">Contact</div>
+    <h2 class="section-title">함께 만들어요</h2>
+    <p class="section-sub">새로운 프로젝트나 협업 제안이 있으시면 편하게 연락 주세요.</p>
+    <div class="contact-grid fade-up">
+      <div class="contact-info">
+        <a href="mailto:yoobin.choi@email.com" class="contact-item">
+          <div class="contact-icon">✉️</div>
+          <div class="contact-detail">
+            <div class="contact-type">이메일</div>
+            <div class="contact-value">yoobin.choi@email.com</div>
+          </div>
+        </a>
+        <a href="https://linkedin.com/in/yoobin-choi" target="_blank" rel="noopener" class="contact-item">
+          <div class="contact-icon">💼</div>
+          <div class="contact-detail">
+            <div class="contact-type">LinkedIn</div>
+            <div class="contact-value">linkedin.com/in/yoobin-choi</div>
+          </div>
+        </a>
+        <a href="https://notion.so/yoobin-portfolio" target="_blank" rel="noopener" class="contact-item">
+          <div class="contact-icon">📄</div>
+          <div class="contact-detail">
+            <div class="contact-type">포트폴리오 (Notion)</div>
+            <div class="contact-value">notion.so/yoobin-portfolio</div>
+          </div>
+        </a>
+      </div>
+
+      <form class="contact-form" id="contactForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">이름</label>
+            <input type="text" id="name" placeholder="홍길동" required />
+          </div>
+          <div class="form-group">
+            <label for="email">이메일</label>
+            <input type="email" id="email" placeholder="hello@example.com" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="subject">제목</label>
+          <input type="text" id="subject" placeholder="협업 제안드립니다" required />
+        </div>
+        <div class="form-group">
+          <label for="message">메시지</label>
+          <textarea id="message" placeholder="어떤 프로젝트인지 간단히 소개해 주세요..." required></textarea>
+        </div>
+        <button type="submit" class="btn-send">메시지 보내기</button>
+        <div class="form-success" id="formSuccess">✅ 메시지가 전송되었습니다. 빠르게 회신 드릴게요!</div>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 최유빈. 디자인 &amp; 개발 직접 제작.</p>
+  </footer>
+
+  <script>
+    // Nav scroll shadow
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    // Hamburger menu
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // Fade-up on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Skill bars animate on scroll
+    const skillObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.skill-bar').forEach(bar => {
+            bar.style.width = bar.dataset.width + '%';
+          });
+          skillObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    document.querySelectorAll('#skills').forEach(el => skillObserver.observe(el));
+
+    // Contact form (demo)
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const btn = this.querySelector('.btn-send');
+      btn.textContent = '전송 중...';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.style.display = 'none';
+        document.getElementById('formSuccess').style.display = 'block';
+        this.reset();
+      }, 1200);
+    });
+  </script>
+</body>
+</html>
